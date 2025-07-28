@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class TransactionController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = Transaction::with('category')
+            ->where('user_id', Auth::id());
+
+        if ($request->has('start_date')) {
+            $query->where('date', '>=', $request->start_date);
+        }
+
+        if ($request->has('end_date')) {
+            $query->where('date', '<=', $request->end_date);
+        }
+
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $transactions = $query->latest('date')
+            ->paginate($request->input('limit', 10));
+
+        return response()->json([
+            'data' => $transactions->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'category' => [
+                        'id' => $transaction->category->id,
+                        'name' => $transaction->category->name,
+                        'type' => $transaction->category->type,
+                        'icon' => $transaction->category->icon,
+                    ],
+                    'amount' => $transaction->amount,
+                    'type' => $transaction->type,
+                    'date' => $transaction->date->format('Y-m-d'),
+                    'note' => $transaction->note,
+                ];
+            }),
+            'pagination' => [
+                'total' => $transactions->total(),
+                'current_page' => $transactions->currentPage(),
+                'last_page' => $transactions->lastPage(),
+            ],
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'amount' => 'required|numeric|min:0',
+            'type' => 'required|in:income,expense',
+            'date' => 'required|date_format:Y-m-d',
+            'note' => 'nullable|string',
+        ]);
+
+        $transaction = Transaction::create([
+            'user_id' => Auth::id(),
+            'category_id' => $validated['category_id'],
+            'amount' => $validated['amount'],
+            'type' => $validated['type'],
+            'date' => $validated['date'],
+            'note' => $validated['note'],
+        ]);
+
+        return response()->json(['message' => 'Transaction created successfully', 'data' => $transaction]);
+    }
+}
