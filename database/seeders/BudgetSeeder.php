@@ -19,7 +19,7 @@ class BudgetSeeder extends Seeder
                 Budget::create([
                     'user_id' => $user->id,
                     'category_id' => $category->id,
-                    'amount' => fake()->numberBetween(1000000, 5000000),
+                    'amount_limit' => fake()->numberBetween(1000000, 5000000),
                     'start_date' => now()->startOfMonth(),
                     'end_date' => now()->endOfMonth(),
                     'description' => 'Monthly budget for ' . $category->name

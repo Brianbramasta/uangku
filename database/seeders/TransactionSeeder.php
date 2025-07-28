@@ -22,7 +22,7 @@ class TransactionSeeder extends Seeder
                     'user_id' => $user->id,
                     'category_id' => $category->id,
                     'amount' => fake()->numberBetween(1000000, 10000000),
-                    'description' => fake()->sentence(),
+                    'note' => fake()->sentence(),
                     'date' => fake()->dateTimeBetween('-1 month', 'now'),
                     'type' => 'income'
                 ]);
@@ -37,7 +37,7 @@ class TransactionSeeder extends Seeder
                         'user_id' => $user->id,
                         'category_id' => $category->id,
                         'amount' => fake()->numberBetween(50000, 1000000),
-                        'description' => fake()->sentence(),
+                        'note' => fake()->sentence(),
                         'date' => fake()->dateTimeBetween('-1 month', 'now'),
                         'type' => 'expense'
                     ]);

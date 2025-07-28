@@ -16,6 +16,7 @@ return new class extends Migration
             $table->enum('period', ['monthly', 'weekly']);
             $table->date('start_date');
             $table->date('end_date');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
