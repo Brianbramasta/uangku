@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
+use App\Http\Controllers\Api\V1\BudgetController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,5 +29,12 @@ Route::prefix('v1')->group(function () {
         // Transactions
         Route::get('transactions', [TransactionController::class, 'index']);
         Route::post('transactions', [TransactionController::class, 'store']);
+
+        // Budgets
+        Route::get('budgets', [BudgetController::class, 'index']);
+
+        // Dashboard
+        Route::get('dashboard/summary', [DashboardController::class, 'summary']);
+        Route::get('dashboard/chart', [DashboardController::class, 'chart']);
     });
 });
