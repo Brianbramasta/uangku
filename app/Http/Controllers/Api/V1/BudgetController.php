@@ -34,4 +34,55 @@ class BudgetController extends Controller
             })
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'amount_limit' => 'required|numeric|min:0',
+            'period' => 'required|in:monthly,weekly',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date'
+        ]);
+
+        $budget = Budget::create([
+            'user_id' => Auth::id(),
+            'category_id' => $validated['category_id'],
+            'amount_limit' => $validated['amount_limit'],
+            'period' => $validated['period'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date']
+        ]);
+
+        return response()->json([
+            'message' => 'Budget created successfully',
+            'data' => $budget
+        ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'amount_limit' => 'required|numeric|min:0',
+            'period' => 'required|in:monthly,weekly',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date'
+        ]);
+
+        $budget = Budget::where('user_id', Auth::id())->findOrFail($id);
+        $budget->update($validated);
+
+        return response()->json([
+            'message' => 'Budget updated successfully',
+            'data' => $budget
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $budget = Budget::where('user_id', Auth::id())->findOrFail($id);
+        $budget->delete();
+
+        return response()->json(['message' => 'Budget deleted successfully']);
+    }
 }

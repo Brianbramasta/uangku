@@ -51,4 +51,29 @@ class CategoryController extends Controller
             'data' => $category,
         ]);
     }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'type' => 'required|in:income,expense',
+            'icon' => 'nullable|string|max:100',
+        ]);
+
+        $category = Category::where('user_id', Auth::id())->findOrFail($id);
+        $category->update($validated);
+
+        return response()->json([
+            'message' => 'Category updated successfully',
+            'data' => $category,
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $category = Category::where('user_id', Auth::id())->findOrFail($id);
+        $category->delete();
+
+        return response()->json(['message' => 'Category deleted successfully']);
+    }
 }

@@ -23,15 +23,13 @@ Route::prefix('v1')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
 
         // Categories
-        Route::get('categories', [CategoryController::class, 'index']);
-        Route::post('categories', [CategoryController::class, 'store']);
+        Route::apiResource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
 
         // Transactions
-        Route::get('transactions', [TransactionController::class, 'index']);
-        Route::post('transactions', [TransactionController::class, 'store']);
+        Route::apiResource('transactions', TransactionController::class)->only(['index', 'store', 'update', 'destroy']);
 
         // Budgets
-        Route::get('budgets', [BudgetController::class, 'index']);
+        Route::apiResource('budgets', BudgetController::class)->only(['index', 'store', 'update', 'destroy']);
 
         // Dashboard
         Route::get('dashboard/summary', [DashboardController::class, 'summary']);

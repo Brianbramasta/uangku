@@ -228,3 +228,60 @@ Authorization: Bearer {token}
 ```
 
 ---
+
+## ✅ **4. Categories: CRUD Operations**
+
+### 🔸 Create Category
+
+-   **Endpoint:** `POST /api/v1/categories`
+-   **Request Body:**
+    -   `name`: Nama kategori (required)
+    -   `type`: Jenis kategori (`income`/`expense`) (required)
+    -   `icon`: Ikon kategori (optional)
+
+### 🔸 Update Category
+
+-   **Endpoint:** `PUT /api/v1/categories/{id}`
+-   **Request Body:** Same as create
+
+### 🔸 Delete Category
+
+-   **Endpoint:** `DELETE /api/v1/categories/{id}`
+
+---
+
+## ✅ **7. Budgets: CRUD Operations**
+
+### 🔸 Create Budget
+
+-   **Endpoint:** `POST /api/v1/budgets`
+-   **Request Body:**
+    -   `category_id`: ID kategori (required)
+    -   `amount_limit`: Limit anggaran (required)
+    -   `period`: Periode (`monthly`/`weekly`) (required)
+    -   `start_date`: Tanggal mulai (format `YYYY-MM-DD`)
+    -   `end_date`: Tanggal berakhir (format `YYYY-MM-DD`)
+
+### 🔸 Update Budget
+
+-   **Endpoint:** `PUT /api/v1/budgets/{id}`
+-   **Request Body:** Same as create
+
+### 🔸 Delete Budget
+
+-   **Endpoint:** `DELETE /api/v1/budgets/{id}`
+
+---
+
+## ✅ **8. Transactions: Update & Delete**
+
+### 🔸 Update Transaction
+
+-   **Endpoint:** `PUT /api/v1/transactions/{id}`
+-   **Request Body:** Same as create
+
+### 🔸 Delete Transaction
+
+-   **Endpoint:** `DELETE /api/v1/transactions/{id}`
+
+---
