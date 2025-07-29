@@ -78,4 +78,34 @@ class TransactionController extends Controller
 
         return response()->json(['message' => 'Transaction created successfully', 'data' => $transaction]);
     }
+
+    public function update(Request $request, Transaction $transaction)
+    {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action');
+        }
+
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'amount' => 'required|numeric|min:0',
+            'type' => 'required|in:income,expense',
+            'date' => 'required|date_format:Y-m-d',
+            'note' => 'nullable|string',
+        ]);
+
+        $transaction->update($validated);
+
+        return response()->json(['message' => 'Transaction updated successfully', 'data' => $transaction]);
+    }
+
+    public function destroy(Transaction $transaction)
+    {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action');
+        }
+
+        $transaction->delete();
+
+        return response()->json(['message' => 'Transaction deleted successfully']);
+    }
 }

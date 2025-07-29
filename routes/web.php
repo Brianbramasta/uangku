@@ -33,6 +33,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/transactions', function () {
+        return Inertia::render('Transactions/Index');
+    })->name('transactions.index');
+
+    Route::get('/budgets', function () {
+        return Inertia::render('Budgets/Index');
+    })->name('budgets.index');
 });
 
 require __DIR__.'/auth.php';

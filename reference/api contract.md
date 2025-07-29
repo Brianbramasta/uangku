@@ -273,15 +273,42 @@ Authorization: Bearer {token}
 
 ---
 
+## ✅ **2. Transactions: Buat Transaksi Baru**
+
+- **Endpoint:** `/api/v1/transactions`
+- **Method:** `POST`
+
+### 🔸 Parameter Request:
+- `category_id`: ID kategori (required)
+- `amount`: Jumlah nominal (required, numeric)
+- `type`: Jenis transaksi (`income`/`expense`) (required)
+- `date`: Tanggal transaksi (format `YYYY-MM-DD`) (required)
+- `note`: Catatan (optional)
+
+### 🔸 Example Response:
+```json
+{
+  "message": "Transaction created successfully",
+  "data": {
+    "id": 21,
+    "category_id": 2,
+    "amount": 45000,
+    "type": "expense",
+    "date": "2025-07-28",
+    "note": "Sarapan di warung"
+  }
+}
+```
+
+---
+
 ## ✅ **8. Transactions: Update & Delete**
 
 ### 🔸 Update Transaction
-
--   **Endpoint:** `PUT /api/v1/transactions/{id}`
--   **Request Body:** Same as create
+- **Endpoint:** `PUT /api/v1/transactions/{id}`
+- **Request Body:** Same as create
 
 ### 🔸 Delete Transaction
-
--   **Endpoint:** `DELETE /api/v1/transactions/{id}`
+- **Endpoint:** `DELETE /api/v1/transactions/{id}`
 
 ---
