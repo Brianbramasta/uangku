@@ -7,9 +7,10 @@ import { NavLink } from 'react-router-dom';
  */
 const Sidebar = () => {
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: '📊' },
+    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/transactions', label: 'Transactions', icon: '💰' },
     { path: '/budgets', label: 'Budgets', icon: '📈' },
+    { path: '/categories', label: 'Categories', icon: '🏷️' },
   ];
 
   return (

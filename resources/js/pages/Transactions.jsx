@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '@/services/api';
 import { Button } from '@/Components/Button';
 import { DataTable } from '@/Components/DataTable';
-import { Link } from '@inertiajs/react';
+import { Link } from 'react-router-dom';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -57,12 +57,12 @@ const Transactions = () => {
           { header: 'Description', accessor: 'note' },
           { header: 'Amount', accessor: 'amount' },
           { header: 'Category', accessor: 'category.name' },
-          { 
-            header: 'Actions', 
+          {
+            header: 'Actions',
             accessor: 'actions',
             render: (row) => (
               <div className="flex space-x-2">
-                <Link 
+                <Link
                   href={`/transactions/${row.id}/edit`}
                   className="text-blue-600 hover:text-blue-900"
                 >
