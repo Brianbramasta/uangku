@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/services/api';
 import { Button } from '@/Components/Button';
+import Modal from '@/components/Modal';
+import BudgetForm from '@/components/forms/BudgetForm';
 
 const Budgets = () => {
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [period, setPeriod] = useState('monthly');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBudget, setSelectedBudget] = useState(null);
+  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
 
   // Fetch budgets data
   useEffect(() => {
@@ -31,6 +36,46 @@ const Budgets = () => {
     setPeriod(newPeriod);
   };
 
+  const handleAdd = () => {
+    setSelectedBudget(null);
+    setModalMode('add');
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (budget) => {
+    setSelectedBudget(budget);
+    setModalMode('edit');
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (budgetId) => {
+    if (!window.confirm('Are you sure you want to delete this budget?')) return;
+
+    try {
+      await api.deleteBudget(budgetId);
+      setBudgets(budgets.filter(b => b.id !== budgetId));
+    } catch (error) {
+      setError('Failed to delete budget');
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = async (formData) => {
+    try {
+      if (modalMode === 'add') {
+        const response = await api.createBudget(formData);
+        setBudgets([...budgets, response.data]);
+      } else {
+        const response = await api.updateBudget(selectedBudget.id, formData);
+        setBudgets(budgets.map(b => b.id === selectedBudget.id ? response.data : b));
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      setError(modalMode === 'add' ? 'Failed to create budget' : 'Failed to update budget');
+      console.error(error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -49,11 +94,23 @@ const Budgets = () => {
         </div>
         <button
           className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          onClick={() => alert('Add budget functionality would go here')}
+          onClick={handleAdd}
         >
           Add Budget
         </button>
       </div>
+
+      {/* Modal */}
+      <Modal
+        show={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={modalMode === 'add' ? 'Add New Budget' : 'Edit Budget'}
+      >
+        <BudgetForm
+          budget={selectedBudget}
+          onSubmit={handleSubmit}
+        />
+      </Modal>
 
       {/* Error message */}
       {error && (
@@ -110,12 +167,18 @@ const Budgets = () => {
                     </p>
                   </div>
                   <div className="flex space-x-2">
-                    <button className="text-gray-400 hover:text-gray-500">
+                    <button
+                      className="text-gray-400 hover:text-gray-500"
+                      onClick={() => handleEdit(budget)}
+                    >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                       </svg>
                     </button>
-                    <button className="text-gray-400 hover:text-red-500">
+                    <button
+                      className="text-gray-400 hover:text-red-500"
+                      onClick={() => handleDelete(budget.id)}
+                    >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                       </svg>

@@ -14,20 +14,20 @@ class TransactionController extends Controller
         $query = Transaction::with('category')
             ->where('user_id', Auth::id());
 
-        if ($request->has('start_date')) {
-            $query->where('date', '>=', $request->start_date);
+        if ($request->filled('start_date')) {
+            $query->whereDate('date', '>=', $request->start_date);
         }
 
-        if ($request->has('end_date')) {
-            $query->where('date', '<=', $request->end_date);
+        if ($request->filled('end_date')) {
+            $query->whereDate('date', '<=', $request->end_date);
         }
 
-        if ($request->has('type')) {
-            $query->where('type', $request->type);
+        if ($request->filled('type')) {
+            $query->where('type', '=', $request->type);
         }
 
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
+        if ($request->filled('category_id')) {
+            $query->where('category_id', '=', $request->category_id);
         }
 
         $transactions = $query->latest('date')

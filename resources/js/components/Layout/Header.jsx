@@ -25,27 +25,11 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-sm">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center">
-          <h1 className="text-xl font-semibold text-gray-800">EdgesPay</h1>
-        </div>
-        
-        {/* Search Bar */}
-        <div className="relative max-w-md w-full mx-4 hidden md:block">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        
+      <div className="flex items-center justify-end px-6 py-4">
+
+
+
+
         <div className="flex items-center space-x-4">
           {/* Notification Bell */}
           <button className="relative p-1 text-gray-400 hover:text-gray-500 focus:outline-none">
@@ -54,7 +38,7 @@ const Header = () => {
             </svg>
             <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
           </button>
-          
+
           {/* User Profile */}
           <div className="flex items-center space-x-2">
             <span className="text-sm font-medium text-gray-700">{user?.name || 'Gabby K'}</span>
@@ -66,7 +50,7 @@ const Header = () => {
               )}
             </div>
             <div className="relative">
-              <button 
+              <button
                 onClick={handleLogout}
                 className="text-sm text-red-600 hover:text-red-800"
               >
