@@ -68,6 +68,7 @@ const apiRequest = async (endpoint, method = 'GET', data = null, includeAuth = t
 
 export default {
   // Auth endpoints
+  register: (data) => apiRequest('/register', 'POST', data, false),
   login: (credentials) => apiRequest('/login', 'POST', credentials, false),
   logout: () => apiRequest('/logout', 'POST'),
 

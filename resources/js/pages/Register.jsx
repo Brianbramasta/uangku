@@ -46,13 +46,14 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Note: The API contract doesn't specify a register endpoint,
-      // so we'll assume it would be similar to login
-      // In a real app, you would call the actual register endpoint
-      // await api.register(formData);
+      const response = await api.register(formData);
 
-      // For now, we'll just redirect to login page with a success message
-      navigate('/login');
+      // Save token and user data
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+
+      // Redirect to dashboard
+      navigate('/dashboard');
     } catch (error) {
       setError(error.message || 'Registration failed');
     } finally {
