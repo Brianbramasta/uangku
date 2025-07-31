@@ -16,10 +16,20 @@ export default function Dashboard() {
   });
   const [transactions, setTransactions] = useState([]);
 
+  // State untuk filter tanggal expense by category
+  const [dateFilter, setDateFilter] = useState({
+    start_date: new Date().toISOString().split('T')[0].substring(0, 7) + '-01', // Awal bulan ini
+    end_date: new Date().toISOString().split('T')[0] // Hari ini
+  });
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch dashboard summary
+    fetchData();
+  }, [dateFilter]);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      // Fetch dashboard summary
         const summaryResponse = await api.getDashboardSummary();
         setSummaryData({
           balance: summaryResponse.balance,
@@ -42,7 +52,11 @@ export default function Dashboard() {
         // Fetch recent transactions dan data untuk pie chart
         const [recentTransactions, expenseTransactions] = await Promise.all([
           api.getTransactions({ limit: 5 }),
-          api.getTransactions({ type: 'expense' })
+          api.getTransactions({
+            type: 'expense',
+            start_date: dateFilter.start_date,
+            end_date: dateFilter.end_date
+          })
         ]);
 
         setTransactions(recentTransactions.data);
@@ -79,8 +93,6 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
-    fetchData();
-  }, []);
 
   return (
     <div className="dashboard-container p-6">
@@ -117,7 +129,40 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Expense by Category Chart */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold mb-4">Expenses by Category</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Expenses by Category</h2>
+            <div className="flex gap-2 items-center">
+              <div>
+                <input
+                  type="date"
+                  value={dateFilter.start_date}
+                  onChange={(e) => {
+                    setDateFilter(prev => ({
+                      ...prev,
+                      start_date: e.target.value
+                    }));
+                    fetchData();
+                  }}
+                  className="px-2 py-1 border rounded text-sm"
+                />
+              </div>
+              <span className="text-gray-500">to</span>
+              <div>
+                <input
+                  type="date"
+                  value={dateFilter.end_date}
+                  onChange={(e) => {
+                    setDateFilter(prev => ({
+                      ...prev,
+                      end_date: e.target.value
+                    }));
+                    fetchData();
+                  }}
+                  className="px-2 py-1 border rounded text-sm"
+                />
+              </div>
+            </div>
+          </div>
           {loading ? (
             <div className="h-[300px] flex items-center justify-center">
               <p>Loading chart...</p>
