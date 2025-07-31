@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/services/api';
+import ExpensePieChart from '@/components/ExpensePieChart';
+import CashFlowChart from '@/components/CashFlowChart';
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categoryExpenses, setCategoryExpenses] = useState([]);
+  const [cashFlowData, setCashFlowData] = useState([]);
   const [summaryData, setSummaryData] = useState({
     balance: 0,
     income: 0,
@@ -24,9 +28,50 @@ export default function Dashboard() {
           month: summaryResponse.month
         });
 
-        // Fetch recent transactions
-        const transactionsResponse = await api.getTransactions({ limit: 5 });
-        setTransactions(transactionsResponse.data);
+        // Fetch chart data
+        const monthlyChartResponse = await api.getDashboardChart({ range: 'monthly' });
+
+        // Format data untuk bar chart
+        const formattedCashFlowData = monthlyChartResponse.labels.map((label, index) => ({
+          month: label,
+          income: monthlyChartResponse.income_data[index],
+          expense: monthlyChartResponse.expense_data[index]
+        }));
+        setCashFlowData(formattedCashFlowData);
+
+        // Fetch recent transactions dan data untuk pie chart
+        const [recentTransactions, expenseTransactions] = await Promise.all([
+          api.getTransactions({ limit: 5 }),
+          api.getTransactions({ type: 'expense' })
+        ]);
+
+        setTransactions(recentTransactions.data);
+
+        // Untuk pie chart, menjumlahkan pengeluaran per kategori
+        const expensesByCategory = {};
+        if (expenseTransactions.data && Array.isArray(expenseTransactions.data)) {
+          expenseTransactions.data.forEach(transaction => {
+            if (transaction && transaction.category) {
+              const categoryName = transaction.category.name;
+              if (!expensesByCategory[categoryName]) {
+                expensesByCategory[categoryName] = 0;
+              }
+              expensesByCategory[categoryName] += parseFloat(transaction.amount);
+            }
+          });
+        }
+
+        // Filter out categories with zero amount
+        const formattedCategoryExpenses = Object.entries(expensesByCategory)
+          .filter(([_, amount]) => amount > 0)
+          .map(([category, amount]) => ({
+            category,
+            amount: Math.round(amount) // Round to whole numbers
+          }));
+
+        console.log('Raw expense transactions:', expenseTransactions.data);
+        console.log('Category Expenses:', formattedCategoryExpenses);
+        setCategoryExpenses(formattedCategoryExpenses);
 
         setLoading(false);
       } catch (err) {
@@ -69,8 +114,30 @@ export default function Dashboard() {
       </div>
 
       {/* Charts Section */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-        {/* Chart component will be added here */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Expense by Category Chart */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold mb-4">Expenses by Category</h2>
+          {loading ? (
+            <div className="h-[300px] flex items-center justify-center">
+              <p>Loading chart...</p>
+            </div>
+          ) : (
+            <ExpensePieChart data={categoryExpenses} />
+          )}
+        </div>
+
+        {/* Cash Flow Chart */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-lg font-semibold mb-4">Monthly Cash Flow</h2>
+          {loading ? (
+            <div className="h-[300px] flex items-center justify-center">
+              <p>Loading chart...</p>
+            </div>
+          ) : (
+            <CashFlowChart data={cashFlowData} />
+          )}
+        </div>
       </div>
 
       {/* Recent Transactions */}
