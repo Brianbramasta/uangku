@@ -45,20 +45,36 @@ class DashboardController extends Controller
         // Implement logic for different ranges here
         // Example implementation for monthly range
         if ($range === 'monthly') {
-            for ($i = 3; $i >= 0; $i--) {
-                $month = now()->subMonths($i);
-                $data['labels'][] = $month->locale('id')->isoFormat('MMM Y');
+            $processedMonths = [];
+            $now = now();
 
-                $data['income_data'][] = (float)Transaction::where('user_id', $user->id)
-                    ->where('type', 'income')
-                    ->whereMonth('date', $month->month)
-                    ->sum('amount');
+            // Get last 4 unique months
+            for ($i = 0; $i <= 3; $i++) {
+                $month = $now->copy()->subMonths($i);
+                $monthKey = $month->format('Y-m');
 
-                $data['expense_data'][] = (float)Transaction::where('user_id', $user->id)
-                    ->where('type', 'expense')
-                    ->whereMonth('date', $month->month)
-                    ->sum('amount');
+                if (!in_array($monthKey, $processedMonths)) {
+                    $processedMonths[] = $monthKey;
+                    $data['labels'][] = $month->locale('id')->isoFormat('MMM Y');
+
+                    $data['income_data'][] = (float)Transaction::where('user_id', $user->id)
+                        ->where('type', 'income')
+                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $month->month)
+                        ->sum('amount');
+
+                    $data['expense_data'][] = (float)Transaction::where('user_id', $user->id)
+                        ->where('type', 'expense')
+                        ->whereYear('date', $month->year)
+                        ->whereMonth('date', $month->month)
+                        ->sum('amount');
+                }
             }
+
+            // Reverse arrays to show oldest to newest
+            $data['labels'] = array_reverse($data['labels']);
+            $data['income_data'] = array_reverse($data['income_data']);
+            $data['expense_data'] = array_reverse($data['expense_data']);
         }
 
         return response()->json($data);

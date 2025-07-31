@@ -109,6 +109,13 @@ const BudgetForm = ({ budget, onSubmit }) => {
       </div>
 
       <div className="flex justify-end space-x-2">
+        <Button
+          type="button"
+          onClick={() => onSubmit(null)}
+          className="bg-gray-200 hover:bg-gray-300 text-gray-800"
+        >
+          Cancel
+        </Button>
         <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
           {budget ? 'Update' : 'Create'}
         </Button>

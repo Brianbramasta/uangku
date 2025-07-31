@@ -102,7 +102,7 @@ const Budgets = () => {
 
       {/* Modal */}
       <Modal
-        show={isModalOpen}
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={modalMode === 'add' ? 'Add New Budget' : 'Edit Budget'}
       >
@@ -148,7 +148,7 @@ const Budgets = () => {
             <p className="text-gray-500 mb-6">Create your first budget to start tracking your expenses</p>
             <button
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              onClick={() => alert('Add budget functionality would go here')}
+              onClick={handleAdd}
             >
               Create Budget
             </button>
